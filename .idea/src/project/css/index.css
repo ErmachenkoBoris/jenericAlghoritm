@@ -1,0 +1,41 @@
+body {
+    margin: 0;
+}
+.main_container {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+}
+.main_container__canvas {
+    background-color: #f2dce1;
+}
+.main_container__menu {
+    margin-top: 10vh;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-direction: column;
+}
+.form {
+    display: flex;
+    justify-content: space-between;
+    align-items: space-between;
+    flex-direction: column;
+}
+.menu__buttons {
+    flex-basis: 10vw;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+}
+.start_button {
+    background-color: #fff3fe;
+}
+.pause_button {
+    background-color: #ffe9ee;
+}
+.stop_button {
+    background-color: #f2dce1;
+}
