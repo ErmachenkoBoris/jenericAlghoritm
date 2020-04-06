@@ -1,4 +1,5 @@
 function Gene(x, y) {
+    this.success = 0;
     this.cost = 9999;
     if (x) this.x = x % canvasWidth;
     if (y) this.y = y % canvasHeight;
@@ -10,7 +11,7 @@ Gene.prototype.random = function() {
     this.y = Math.random() * canvasHeight;
 };
 Gene.prototype.mutate = function(chance) {
-    if (Math.random() > chance) return;
+    if (Math.random() > chance || this.success == 1) return;
 
     let xOrY = Math.random() <= 0.5 ? -1 : 1;
     let consOrpros = Math.random() <= 0.5 ? -1 : 1;
@@ -47,6 +48,9 @@ Gene.prototype.mate = function(gene) {
 Gene.prototype.calcCost = function(compareTo) {
     let distance = Math.sqrt(Math.pow(Math.floor(this.x - compareTo.x),2) +Math.pow(Math.floor(this.y - compareTo.y),2));
     this.cost = Math.floor(distance);
+    if(this.cost < compareTo.radius) {
+        this.success = 1;
+    }
 };
 function Population(goal, size) {
     this.members = [];
@@ -76,11 +80,6 @@ Population.prototype.display = function() {
    // document.body.innerHTML += ("</ul>");
 };
 Population.prototype.sort = function() {
-
-    this.members = this.members.filter((value, index) =>
-        index < genes
-    );
-    this.members.length = genes;
     let min = 0;
     let minj = 0;
     for(let i = 0; i < this.members.length; i++){
@@ -102,8 +101,12 @@ Population.prototype.sort = function() {
 
         this.members[i] = new Gene(tmpGene.x, tmpGene.y);
         this.members[i].cost = tmpGene.cost;
-
     }
+
+    this.members = this.members.filter((value, index) =>
+        index < genes
+    );
+    this.members.length = genes;
 }
 Population.prototype.generation = function() {
     for (let i = 0; i < this.members.length; i++) {
@@ -113,15 +116,13 @@ Population.prototype.generation = function() {
     this.sort();
     this.display();
 
-    for(let i = 0; i < this.members.length - 3; i=i+2) {
+    for(let i = 0; i < this.members.length / 2; i=i+2) {
         let children = this.members[i].mate(this.members[i + 1]);
         this.members.push(children[0]);
         this.members.push(children[1]);
-
-        //console.log(children);
     }
 
-    this.sort();
+    //this.sort();
 
     for (let i = 0; i < this.members.length; i++) {
         this.members[i].mutate(0.3);
@@ -133,7 +134,7 @@ Population.prototype.generation = function() {
     if(this.generationNumber<10000) {
         setTimeout(function () {
             scope.generation();
-        }, 50);
+        }, 700);
     }
 };
 const canvasWidth = 800;
