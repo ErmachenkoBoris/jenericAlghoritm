@@ -8,22 +8,21 @@
         </title>
     </head>
     <body>
-    <script defer src="../js/jeneticEngine.js"></script>
+    <script type="module" defer src="../js/jeneticEngine.js"></script>
     <div class="main_container">
         <canvas id="canvas" class="main_container__canvas">
         </canvas>
         <div class="main_container__menu">
             <div class="menu__form">
                 <form class="form">
-                    <label for="populateNumber">Enter members of the population: </label>
-                    <input type="text" id="populateNumber" value="100">
-                    <input type="submit" value="Submit">
+                    <label for="populateNumber" class="menu__form-label">number of population : </label>
+                    <input class="menu__form-text" type="text" id="populateNumber" value="100">
                 </form>
             </div>
             <div class="menu__buttons">
-                <input class="button start_button" type="button" value="start">
-                <input class="button pause_button" type="button" value="pause">
-                <input class="button stop_button" type="button" value="stop">
+                <input id="start_button" class="button start_button" type="button" value="start">
+                <input id="pause_button" class="button pause_button" type="button" value="pause">
+                <input id="stop_button" class="button stop_button" type="button" value="stop">
             </div>
         </div>
     </div>

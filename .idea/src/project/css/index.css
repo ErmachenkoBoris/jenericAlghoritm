@@ -24,11 +24,18 @@ body {
     align-items: space-between;
     flex-direction: column;
 }
+.menu__form-label {
+    font-size: 22px;
+}
 .menu__buttons {
-    flex-basis: 10vw;
     display: flex;
     justify-content: space-between;
     flex-direction: row;
+    width: 100%;
+}
+.menu__form-text {
+    border: none;
+    font-size: 26px;
 }
 .start_button {
     background-color: #fff3fe;
@@ -39,3 +46,9 @@ body {
 .stop_button {
     background-color: #f2dce1;
 }
+.button {
+    cursor: pointer;
+    font-size: 24px;
+    border: none;
+}
+
