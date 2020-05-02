@@ -1,12 +1,9 @@
-import * as extrem from './extrenums.js';
-
 const circleRadius = 2;
-const timeOneRound = 300;
-const numberExtrenums = 10;
-const colorGenes = '#F25387'
-const canvasWidth = 600;
-const canvasHeight= 500;
-const genesDefault = 200;
+const timeOneRound = 150;
+
+let canvasWidth;
+let canvasHeight;
+const colorExtrenum = '#f21c14';
 
 function Gene(x, y) {
     this.success = 0;
@@ -41,6 +38,7 @@ Gene.prototype.mutate = function(chance) {
         }
     }
 };
+
 Gene.prototype.mate = function(gene) {
     let pivot = Math.random() * 20;
     let prosOrcons = Math.random() <= 0.5 ? -1 : 1;
@@ -48,49 +46,55 @@ Gene.prototype.mate = function(gene) {
     let child2 = gene.y - prosOrcons * pivot;
     return [new Gene(this.x, child2), new Gene(child1, gene.y)];
 };
-Gene.prototype.calcCost = function(compareTo) {
-    extrenums.forEach(extremum => {
-        this.cost = 0;
-        let distance = Math.sqrt(Math.pow(Math.floor(this.x - extremum.x),2) +Math.pow(Math.floor(this.y - extremum.y),2))
-        if(distance<=extremum.radius) {
-            this.cost = extremum.depth;
-        }
-    });
+Gene.prototype.calcCost = function(scope, extremums) {
 };
-function Population(goal, size) {
+export function Population(size, interestExtremum, colorGenes, extremums, canvas, cW, cH) {
+    canvasWidth = cW;
+    canvasHeight = cH;
+    this.pause = false;
+    this.size = size;
+    this.ctx = canvas;
+    this.executing = true;
+    this.interestExtremum = interestExtremum;
+    this.extremums = extremums;
     this.members = [];
-    this.goal = goal;
+    this.colorGenes = colorGenes;
     this.generationNumber = 0;
     while (size--) {
         let gene = new Gene();
         gene.random();
         this.members.push(gene);
     }
-    for(let i = 0; i< numberExtrenums; i ++) {
-        extrenums.push(extrem.generateaddNewExtremum(canvasWidth, canvasHeight));
-        console.log(extrenums);
-    }
-    extrenums.sort((a, b) => a.depth - b.depth);
-    extrenums.forEach((value, index)=> value.color = extrem.lightenDarkenColor(extrem.extrenumColor, -20*index));
-    extrenums[numberExtrenums-1].color = 'black';
+};
+Population.prototype.calcCost = function(scope, extremums) {
 };
 Population.prototype.display = function() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    for (let i = 0; i < extrenums.length; i++) {
-        ctx.beginPath();
-        ctx.arc(Math.floor(extrenums[i].x), Math.floor(extrenums[i].y), extrenums[i].radius, 0, 2 * Math.PI);
-        ctx.fillStyle = extrenums[i].color;
-        ctx.fill();
-        ctx.stroke();
+    this.ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (let i = 0; i < this.extremums.length; i++) {
+        this.ctx.beginPath();
+        this.ctx.arc(Math.floor(this.extremums[i].x), Math.floor(this.extremums[i].y), this.extremums[i].radius, 0, 2 * Math.PI);
+        this.ctx.fillStyle = this.extremums[i].color;
+        this.ctx.fill();
+        this.ctx.stroke();
     }
+
     for (let i = 0; i < this.members.length; i++) {
-        ctx.beginPath();
-        ctx.arc(Math.floor(this.members[i].x), Math.floor(this.members[i].y), circleRadius, 0, 2 * Math.PI);
-        ctx.fillStyle = colorGenes;
-        ctx.fill();
-        ctx.stroke();
+        this.ctx.beginPath();
+        this.ctx.arc(Math.floor(this.members[i].x), Math.floor(this.members[i].y), circleRadius, 0, 2 * Math.PI);
+        this.ctx.fillStyle = this.colorGenes;
+        this.ctx.fill();
+        this.ctx.stroke();
     }
+    if(this.interestExtremum && this.interestExtremum.x && this.interestExtremum.y) {
+        this.ctx.beginPath();
+        this.ctx.arc(Math.floor(this.interestExtremum.x), Math.floor(this.interestExtremum.y), circleRadius*2, 0, 2 * Math.PI);
+        this.ctx.fillStyle = colorExtrenum;
+        this.ctx.fill();
+        this.ctx.stroke();
+    }
+
 };
+
 Population.prototype.sort = function() {
     let max = 0;
     let maxj = 0;
@@ -115,73 +119,79 @@ Population.prototype.sort = function() {
         this.members[i].cost = tmpGene.cost;
     }
 
-    this.members = this.members.filter((value, index) =>
-        index < genes
+    let tmpArr = new Array();
+    tmpArr = this.members.filter((value, index) =>
+        index < this.size
     );
-    this.members.length = genes;
+    this.members = tmpArr;
 }
+Population.prototype.executing = false;
+
 Population.prototype.generation = function() {
     for (let i = 0; i < this.members.length; i++) {
-        this.members[i].calcCost(this.goal);
+        this.calcCost(this.members[i], this.extremums, globalExtrenum);
+        // this.members[i].cost = this.calcCost(this.members[i], this.extremums, globalExtrenum);
     }
 
     this.sort();
     this.display();
+    if(checkFinish(this.members)) {
+
+
+        calculateGlobalExtrnum(this.members);
+        this.interestExtremum = globalExtrenum;
+
+        this.executing = false;
+        return true;
+    }
 
     for(let i = 0; i < this.members.length / 2; i=i+2) {
         let children = this.members[i].mate(this.members[i + 1]);
         this.members.push(children[0]);
         this.members.push(children[1]);
     }
-    for (let i = 0; i < this.members.length; i++) {
-        this.members[i].mutate(0.3);
-        this.members[i].calcCost();
+    for (let i = this.members.length / 2; i < this.members.length; i++) {
+        this.members[i].mutate(0.7);
+        this.calcCost(this.members[i], this.extremums, globalExtrenum);
+       // this.members[i].cost = this.calcCost(this.members[i], this.extremums, globalExtrenum);
+       // this.members[i].calcCost(members[i], this.extremums, globalExtrenum);
     }
-    this.generationNumber++;
     let scope = this;
-    if(!pause) {
-        setTimeout(function () {
-            scope.generation();
-        }, timeOneRound);
-    }
+    if (!this.pause) {
+            setTimeout(function () {
+                scope.generation();
+            }, timeOneRound);
+        }
 };
 
-let genes;
-let pause = false;
-let canvas = document.getElementById('canvas');
-let ctx = canvas.getContext('2d');
-canvas.setAttribute('width', canvasWidth);
-canvas.setAttribute('height', canvasHeight);
-
-let population;
-document.getElementById('start_button').addEventListener('click', () => {
-    if(population) return;
-    pause = false;
-    genes = parseInt(document.getElementById('populateNumber').value);
-    if(!genes) genes = genesDefault;
-    population = new Population({x: canvasWidth/2, y:canvasHeight/2, radius: 20}, genes);
-    population.generation();
-});
-document.getElementById('pause_button').addEventListener('click', () => {
-    if(!pause) { pause = true; } else {
-        pause = false;
-        population.generation();
-    }
-});
-document.getElementById('stop_button').addEventListener('click', () => {
-    pause = true;
-    setTimeout(init, 0);
-
-});
-document.getElementById('populateNumber').focus();
-
-function init(){
-    population = undefined;
-    extrenums = [];
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+let globalExtrenum = {
+    x: 0,
+    y: 0
 }
+function calculateGlobalExtrnum(members) {
+    let sumY = 0;
+    let sumX = 0;
+    let length = members.length / 2;
+    for (let i = 0; i < length; i++) {
+        sumX += members[i].x;
+        sumY += members[i].y;
 
-let extrenums = [];
+    }
+    globalExtrenum.x = sumX / length;
+    globalExtrenum.y = sumY / length;
+}
+let oldValue;
+let countFinish = 0;
+function checkFinish(members) {
+    if(members[0].cost == oldValue) {
+        countFinish++;
+    };
+    if(countFinish > members.length/10) {
+        return true;
+    }
+    oldValue = members[0].cost;
+    return false;
+}
 
 
 

@@ -4,9 +4,10 @@ export function Extremum(radious, depth, x, y) {
     this.y = y;
     this.depth = depth;
     this.color = lightenDarkenColor(extrenumColor, -depth*50);
+    this.children= 0;
 }
 
-export function generateaddNewExtremum(canvasWidth, canvasHeight) {
+export function generateExtremum(canvasWidth, canvasHeight) {
     let radious = 10 + Math.random() * 30;
     let depth = Math.random() * 2;
     let x = parseInt(Math.random() * canvasWidth);
