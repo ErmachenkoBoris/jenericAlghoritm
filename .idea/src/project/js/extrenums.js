@@ -10,8 +10,8 @@ export function Extremum(radious, depth, x, y) {
 export function generateExtremum(canvasWidth, canvasHeight) {
     let radious = 10 + Math.random() * 30;
     let depth = Math.random() * 2;
-    let x = parseInt(Math.random() * canvasWidth);
-    let y = parseInt(Math.random() * canvasHeight);
+    let x = radious + parseInt(Math.random() * (canvasWidth-2*radious));
+    let y = radious + parseInt(Math.random() * (canvasHeight-2*radious));
     let extrenum = new Extremum(radious, depth, x, y);
     return extrenum;
 }

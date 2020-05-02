@@ -4,6 +4,7 @@ const timeOneRound = 150;
 let canvasWidth;
 let canvasHeight;
 const colorExtrenum = '#f21c14';
+const globalExtremums = new Array();
 
 function Gene(x, y) {
     this.success = 0;
@@ -22,21 +23,18 @@ Gene.prototype.mutate = function(chance) {
 
     let xOrY = Math.random() <= 0.5 ? -1 : 1;
     let consOrpros = Math.random() <= 0.5 ? -1 : 1;
-    if(xOrY>=0) {
-        let mutateRandome = Math.random() * canvasWidth;
+        let mutateRandomeX = Math.random() * canvasWidth;
         if(consOrpros) {
-            this.x = (this.x + mutateRandome)%canvasWidth;
+            this.x = (this.x + mutateRandomeX)%canvasWidth;
         } else {
-            this.x = Math.abs(this.x - mutateRandome)%canvasWidth;
+            this.x = Math.abs(this.x - mutateRandomeX)%canvasWidth;
         }
-    } else {
-        let mutateRandome = Math.random() * canvasHeight;
+        let mutateRandomeY = Math.random() * canvasHeight;
         if(consOrpros) {
-            this.y = (this.y + mutateRandome)%canvasHeight;
+            this.y = (this.y + mutateRandomeY)%canvasHeight;
         } else {
-            this.y= Math.abs(this.y - mutateRandome)%canvasHeight;
+            this.y= Math.abs(this.y - mutateRandomeY)%canvasHeight;
         }
-    }
 };
 
 Gene.prototype.mate = function(gene) {
@@ -99,7 +97,7 @@ Population.prototype.sort = function() {
     let max = 0;
     let maxj = 0;
     for(let i = 0; i < this.members.length; i++){
-            max = 0;
+            max = -1;
         maxj = 0;
         for(let j = i; j<this.members.length; j++){
             if(this.members[j].cost > max)
@@ -123,24 +121,42 @@ Population.prototype.sort = function() {
     tmpArr = this.members.filter((value, index) =>
         index < this.size
     );
+    this.members = new Array();
     this.members = tmpArr;
 }
 Population.prototype.executing = false;
 
+Population.prototype.drawResults = function() {
+    this.ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (let i = 0; i < this.extremums.length; i++) {
+        this.ctx.beginPath();
+        this.ctx.arc(Math.floor(this.extremums[i].x), Math.floor(this.extremums[i].y), this.extremums[i].radius, 0, 2 * Math.PI);
+        this.ctx.fillStyle = this.extremums[i].color;
+        this.ctx.fill();
+        this.ctx.stroke();
+    }
+
+    for (let i = 0; i < globalExtremums.length; i++) {
+        this.ctx.beginPath();
+        this.ctx.arc(Math.floor(globalExtremums[i].x), Math.floor(globalExtremums[i].y), circleRadius*2, 0, 2 * Math.PI);
+        this.ctx.fillStyle = colorExtrenum;
+        this.ctx.fill();
+        this.ctx.stroke();
+    }
+}
+
 Population.prototype.generation = function() {
     for (let i = 0; i < this.members.length; i++) {
         this.calcCost(this.members[i], this.extremums, globalExtrenum);
-        // this.members[i].cost = this.calcCost(this.members[i], this.extremums, globalExtrenum);
     }
 
     this.sort();
     this.display();
     if(checkFinish(this.members)) {
-
-
         calculateGlobalExtrnum(this.members);
         this.interestExtremum = globalExtrenum;
-
+        globalExtremums.push({...globalExtrenum});
+        this.drawResults();
         this.executing = false;
         return true;
     }
@@ -150,11 +166,16 @@ Population.prototype.generation = function() {
         this.members.push(children[0]);
         this.members.push(children[1]);
     }
+
+    for (let i = 0; i < this.members.length; i++) {
+        this.calcCost(this.members[i], this.extremums, globalExtrenum);
+    }
+
+    this.sort();
+
     for (let i = this.members.length / 2; i < this.members.length; i++) {
         this.members[i].mutate(0.7);
         this.calcCost(this.members[i], this.extremums, globalExtrenum);
-       // this.members[i].cost = this.calcCost(this.members[i], this.extremums, globalExtrenum);
-       // this.members[i].calcCost(members[i], this.extremums, globalExtrenum);
     }
     let scope = this;
     if (!this.pause) {
@@ -183,13 +204,15 @@ function calculateGlobalExtrnum(members) {
 let oldValue;
 let countFinish = 0;
 function checkFinish(members) {
-    if(members[0].cost == oldValue) {
+    if(members && members.length && members[0].cost == oldValue) {
         countFinish++;
     };
     if(countFinish > members.length/10) {
         return true;
     }
-    oldValue = members[0].cost;
+    if(members && members.length) {
+        oldValue = members[0].cost;
+    }
     return false;
 }
 
