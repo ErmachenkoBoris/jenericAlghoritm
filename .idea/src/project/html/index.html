@@ -6,24 +6,44 @@
         <title>
             Genetic Algorithm by Ermachenko Boris
         </title>
+        <script src="https://kit.fontawesome.com/9c7de1a324.js" crossorigin="anonymous"></script>
     </head>
     <body>
-    <div class="main_container">
-        <canvas id="canvas" class="main_container__canvas">
-        </canvas>
-        <div class="main_container__menu">
-            <div class="menu__form">
-                <div class="menu__buttons">
-                    <input id="start_button" class="button start_button" type="button" value="start">
-                    <input id="pause_button" class="button pause_button" type="button" value="pause">
-                    <input id="stop_button" class="button stop_button" type="button" value="stop">
+    <div class = "body_style">
+        <div class="main_container">
+            <div class="menu__buttons">
+                <div class="tooltip-container">
+                    <i id="start_button" class="fas fa-play button start_button"></i>
+                    <p class="tooltip">Press to start</p>
                 </div>
-                <form class="form">
-                    <label for="populateNumber" class="menu__form-label">number of population : </label>
-                    <input class="menu__form-text" type="text" id="populateNumber" value="300">
-                </form>
+                <div class="tooltip-container">
+                    <i id="pause_button" class="far fa-pause-circle button pause_butto"></i>
+                    <p class="tooltip">Press to pause</p>
+                </div>
+                <div class="tooltip-container">
+                    <i id="stop_button" class="fas fa-stop button stop_button"></i>
+                    <p class="tooltip">Press to stop</p>
+                </div>
             </div>
-
+            <div class="main_container__canvas">
+                <canvas id="canvas" class="canvas">
+                </canvas>
+            </div>
+            <div class="main_container__menu">
+                <div class="population">
+                    <div class="tooltip-container">
+                        <i class="fas fa-users"></i>
+                        <p class="tooltip">Choose number of populaion</p>
+                    </div>
+                    <select id="populateNumber">
+                        <option value="300">300</option>
+                        <option value="350">350</option>
+                        <option value="400">400</option>
+                        <option value="400">450</option>
+                        <option value="500">500</option>
+                    </select>
+                </div>
+            </div>
         </div>
     </div>
     <script type="module" defer src="../js/starter.js"></script>

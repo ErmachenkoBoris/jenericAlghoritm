@@ -4,7 +4,7 @@ const timeOneRound = 150;
 let canvasWidth;
 let canvasHeight;
 const colorExtrenum = '#f21c14';
-const globalExtremums = new Array();
+let globalExtremums = new Array();
 
 function Gene(x, y) {
     this.success = 0;
@@ -52,7 +52,7 @@ export function Population(size, interestExtremum, colorGenes, extremums, canvas
     this.pause = false;
     this.size = size;
     this.ctx = canvas;
-    this.executing = true;
+    this.finished = false;
     this.interestExtremum = interestExtremum;
     this.extremums = extremums;
     this.members = [];
@@ -63,10 +63,15 @@ export function Population(size, interestExtremum, colorGenes, extremums, canvas
         gene.random();
         this.members.push(gene);
     }
+    this.oldValue;
+    this.countFinish = 0;
 };
 Population.prototype.calcCost = function(scope, extremums) {
 };
 Population.prototype.display = function() {
+    if(this.pause) {
+        return;
+    }
     this.ctx.clearRect(0, 0, canvas.width, canvas.height);
     for (let i = 0; i < this.extremums.length; i++) {
         this.ctx.beginPath();
@@ -127,6 +132,9 @@ Population.prototype.sort = function() {
 Population.prototype.executing = false;
 
 Population.prototype.drawResults = function() {
+    if(this.pause) {
+        return;
+    }
     this.ctx.clearRect(0, 0, canvas.width, canvas.height);
     for (let i = 0; i < this.extremums.length; i++) {
         this.ctx.beginPath();
@@ -146,18 +154,19 @@ Population.prototype.drawResults = function() {
 }
 
 Population.prototype.generation = function() {
+    this.generationNumber++;
     for (let i = 0; i < this.members.length; i++) {
         this.calcCost(this.members[i], this.extremums, globalExtrenum);
     }
 
     this.sort();
     this.display();
-    if(checkFinish(this.members)) {
+    if(checkFinish(this.members, this)) {
         calculateGlobalExtrnum(this.members);
         this.interestExtremum = globalExtrenum;
         globalExtremums.push({...globalExtrenum});
         this.drawResults();
-        this.executing = false;
+        this.finished = true;
         return true;
     }
 
@@ -189,6 +198,14 @@ let globalExtrenum = {
     x: 0,
     y: 0
 }
+export function clearGlobalExtrem() {
+    globalExtremums = [];
+    globalExtremums = new Array();
+    globalExtrenum = {
+        x: 0,
+        y: 0
+    };
+}
 function calculateGlobalExtrnum(members) {
     let sumY = 0;
     let sumX = 0;
@@ -201,17 +218,16 @@ function calculateGlobalExtrnum(members) {
     globalExtrenum.x = sumX / length;
     globalExtrenum.y = sumY / length;
 }
-let oldValue;
-let countFinish = 0;
-function checkFinish(members) {
-    if(members && members.length && members[0].cost == oldValue) {
-        countFinish++;
+
+function checkFinish(members, scope) {
+    if(members && members.length && members[0].cost == scope.oldValue) {
+        scope.countFinish++;
     };
-    if(countFinish > members.length/10) {
+    if(scope.countFinish > members.length/10) {
         return true;
     }
     if(members && members.length) {
-        oldValue = members[0].cost;
+        scope.oldValue = members[0].cost;
     }
     return false;
 }

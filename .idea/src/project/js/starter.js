@@ -10,6 +10,8 @@ const canvasWidth = 600;
 const canvasHeight= 500;
 const genesDefault = 300;
 
+let currentPopulation = -1;
+
 function purpose1(scope, extrenums, globalExtrenum) {
     scope.cost = 0;
     extrenums.forEach(extremum => {
@@ -40,17 +42,24 @@ function createPurposes() {
 
     return purposes;
 }
-function forParallelCases() {
-    if(populationsArray[0].executing) {
-        populationsArray.forEach(population => {
-            population.interestExtremum = populationsArray[0].interestExtremum;
-        });
-        setTimeout(()=>{ forParallelCases();}, 0);
-    } else {
-        populationsArray[1].interestExtremum = populationsArray[0].interestExtremum;
-        populationsArray[1].pause = false;
-       populationsArray[1].generation();
+function forParallelCases(current) {
+    if(current>=populationsArray.length) {
+        return;
     }
+    if(!populationsArray[current].finished && !populationsArray[current].generationNumber && populationsArray[current].pause ) {
+        populationsArray[current].pause = false;
+        currentPopulation = current;
+        populationsArray[current].generation();
+    } else {
+        if(populationsArray[current].finished) {
+            populationsArray.forEach(population => {
+                population.interestExtremum = populationsArray[current].interestExtremum;
+            });
+            current++;
+        }
+    }
+    setTimeout(()=>{ forParallelCases(current);}, 0);
+
 }
 function launchProgram(genesNumber) {
 
@@ -61,14 +70,10 @@ function launchProgram(genesNumber) {
         const population = new jenetic.Population((index+1)*genesNumber, intersetExtrenum, purpose.color, extremums, ctx, canvasWidth, canvasHeight);
         populationsArray.push(population);
         population.calcCost = purpose.purposeFunction;
-        population.generation();
-
-        if(index==1) {
-            population.pause = true;
-        }
+        population.pause = true;
     });
 
-    forParallelCases();
+    forParallelCases(0);
 }
 
 function generateExtremums(numExtremums) {
@@ -90,28 +95,56 @@ canvas.setAttribute('height', canvasHeight);
 let populationsArray = [];
 
 document.getElementById('start_button').addEventListener('click', () => {
-    if(populationsArray && populationsArray.length > 0) return;
-    let genes = parseInt(document.getElementById('populateNumber').value);
-    if(!genes) genes = genesDefault;
+    if(populationsArray.length>0) {
+        const active = populationsArray.some(population => !population.finished);
+        if(active) {
+            pause();
+        } else {
+            stop();
+        }
+    } else {
+        if (populationsArray && populationsArray.length > 0) return;
+        let genes = parseInt(document.getElementById('populateNumber').value);
+        if (!genes) genes = genesDefault;
 
-    launchProgram(genes);
+        launchProgram(genes);
+    }
 });
 document.getElementById('pause_button').addEventListener('click', () => {
-    populationsArray.forEach(population => {population.pause = !population.pause ;
-        if(!population.pause) {
-            population.generation();
-        }});
-});
-document.getElementById('stop_button').addEventListener('click', () => {
-    populationsArray.forEach(population => {population.pause = true;
-        population = undefined;});
-    populationsArray.length = 0;
-    setTimeout(init, 0);
+    const active = populationsArray.some(population => !population.finished);
+    if(active) {
+        pause();
+    } else {
+        stop();
+    }
 
+});
+
+function pause() {
+    if(currentPopulation >= 0) {
+        const pause = populationsArray[currentPopulation].pause;
+        populationsArray[currentPopulation].pause = !pause;
+        if(pause) {
+            populationsArray[currentPopulation].generation();
+        }
+    }
+}
+
+function stop() {
+    populationsArray.forEach(population => {population.pause = true;
+    });
+    populationsArray = [];
+    setTimeout(init, 0);
+}
+
+document.getElementById('stop_button').addEventListener('click', () => {
+    stop();
 });
 document.getElementById('populateNumber').focus();
 
 function init(){;
+    jenetic.clearGlobalExtrem();
+    currentPopulation = -1;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 

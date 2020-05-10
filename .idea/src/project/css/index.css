@@ -1,22 +1,35 @@
 body {
     margin: 0;
 }
-.main_container {
+.body_style{
     height: 100vh;
     display: flex;
     justify-content: center;
     flex-direction: column;
     align-items: center;
+    columns: 600px auto;
+}
+.main_container {
+    width: 800px;
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    flex-wrap: wrap;
 }
 .main_container__canvas {
-    background-color: #f2dce1;
+    width: 600px;
+    display: flex;
+    flex-direction: row;
+}
+.canvas {
+    background-color: #dfeaf2;
 }
 .main_container__menu {
-    margin-top: 10vh;
+    width: 200px;
     display: flex;
-    justify-content: space-around;
-    align-items: center;
-    flex-direction: column;
+    justify-content: center;
+    flex-direction: row;
+    flex-wrap: wrap;
 }
 .form {
     display: flex;
@@ -28,27 +41,60 @@ body {
     font-size: 22px;
 }
 .menu__buttons {
+    width: 800px;
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     flex-direction: row;
-    width: 100%;
+}
+.menu__options {
+    width: 200px;
 }
 .menu__form-text {
     border: none;
     font-size: 26px;
 }
 .start_button {
-    background-color: #fff3fe;
 }
 .pause_button {
-    background-color: #ffe9ee;
 }
 .stop_button {
-    background-color: #f2dce1;
 }
+
 .button {
+    width: 50px;
     cursor: pointer;
     font-size: 24px;
     border: none;
+}
+
+
+
+.population{
+    font-size: 29px;
+    display: flex;
+    justify-content: space-between;
+    width: 100px;
+    height: 29px;
+}
+
+
+.tooltip-container {
+    position: relative;
+    display: inline-block;
+}
+.tooltip-container .tooltip {
+    transition: all 0.6s;
+    opacity: 0;
+    position: absolute;
+    left: -10%; bottom: 20px;
+    color: #2f2f2f;
+    text-align: center;
+    font-size: 14px;
+    padding: 3px 0;
+    width: 120%;
+    transform: scale(1);
+}
+.tooltip-container:hover .tooltip{
+    opacity: 1;
 }
 
