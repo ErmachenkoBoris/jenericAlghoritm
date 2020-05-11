@@ -4,7 +4,7 @@ const timeOneRound = 150;
 let canvasWidth;
 let canvasHeight;
 const colorExtrenum = '#f21c14';
-let globalExtremums = new Array();
+export let globalExtremums = new Array();
 
 function Gene(x, y) {
     this.success = 0;
@@ -158,7 +158,7 @@ Population.prototype.generation = function() {
     this.sort();
     this.display();
     if(checkFinish(this.members, this)) {
-        calculateGlobalExtrnum(this.members, this.colorGenes);
+        calculateGlobalExtrnum(this.members, this.colorGenes, this.extremums);
         this.interestExtremum = globalExtrenum;
         globalExtremums.push({...globalExtrenum});
 
@@ -196,6 +196,8 @@ let globalExtrenum = {
     cost: -1,
     x: 0,
     y: 0,
+    depth: 0,
+    distance: 0,
 }
 export function clearGlobalExtrem() {
     globalExtremums = [];
@@ -205,9 +207,11 @@ export function clearGlobalExtrem() {
         y: 0,
         cost: 0,
         color: undefined,
+        depth: 0,
+        distance: 0,
     };
 }
-function calculateGlobalExtrnum(members, color) {
+function calculateGlobalExtrnum(members, color, extremums) {
     let sumY = 0;
     let sumX = 0;
     let length = members.length / 2;
@@ -224,6 +228,19 @@ function calculateGlobalExtrnum(members, color) {
     globalExtrenum.y = sumY / length;
     globalExtrenum.cost = cost;
     globalExtrenum.color = color;
+    if(globalExtremums[0]) {
+        const x = globalExtremums[0].x;
+        const y = globalExtremums[0].y;
+        globalExtrenum.distance = Math.sqrt(Math.pow(Math.floor(x - globalExtrenum.x), 2) + Math.pow(Math.floor(y - globalExtrenum.y), 2));
+    }
+
+
+    extremums.forEach(extremum => {
+        let distance = Math.sqrt(Math.pow(Math.floor( globalExtrenum.x  - extremum.x), 2) + Math.pow(Math.floor(globalExtrenum.y - extremum.y), 2));
+        if (distance <= extremum.radius) {
+            globalExtrenum.depth  = extremum.depth;
+        }
+    });
 }
 
 function checkFinish(members, scope) {

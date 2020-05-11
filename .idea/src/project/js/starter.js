@@ -84,6 +84,7 @@ function forParallelCases(current) {
             populationsArray.forEach(population => {
                 population.interestExtremum = populationsArray[current].interestExtremum;
             });
+            showInfo(current, jenetic.globalExtremums);
             current++;
         }
     }
@@ -173,6 +174,27 @@ function stop() {
     });
     populationsArray = [];
     setTimeout(init, 0);
+}
+const iconPopulationTemplates = ['<i class="fas fa-ruler info_item"></i>',
+    '<i class="fas fa-adjust info_item"></i>',
+    '<div class="info_item"><i class="fas fa-ruler"></i>&ensp;<i class="fas fa-adjust"></i></div>'];
+
+function showInfo(current, globalExtremums) {
+    document.getElementById('info_main').style.display = 'flex';
+    const newElement = document.createElement('div');
+    newElement.className = 'info';
+    let depth  = globalExtremums[current].depth.toFixed(2);
+    if(depth == 0) {
+        depth = '-'
+    };
+    let distance = globalExtremums[current].distance.toFixed(2);
+    if(distance == 0) {
+        distance = '-'
+    };
+    newElement.innerHTML = iconPopulationTemplates[current] + '<div class="info_item">' + depth + '</div>'+ '<div class="info_item">' + distance + '</div>';
+
+    const container = document.getElementById('info');
+    container.append(newElement);
 }
 
 document.getElementById('stop_button').addEventListener('click', () => {
