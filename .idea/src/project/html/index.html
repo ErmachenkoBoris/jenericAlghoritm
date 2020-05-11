@@ -30,18 +30,71 @@
                 </canvas>
             </div>
             <div class="main_container__menu">
-                <div class="population">
+                <div class="population single">
+                    <div class="icons">
+                        <i id='circleDistance' class="fas fa-circle"></i>
+                    </div>
                     <div class="tooltip-container">
                         <i class="fas fa-users"></i>
-                        <p class="tooltip">Choose number of populaion</p>
+                        <p class="tooltip">Choose number of populaion 1</p>
                     </div>
-                    <select id="populateNumber">
+                    <select id="populateNumberFirst">
                         <option value="300">300</option>
                         <option value="350">350</option>
                         <option value="400">400</option>
                         <option value="400">450</option>
                         <option value="500">500</option>
                     </select>
+                    <div class="icons">
+                        <i class="fas fa-ruler"></i>
+                    </div>
+                </div>
+                <div class="population single">
+                    <div class="icons">
+                        <i id='circleDepth' class="fas fa-circle"></i>
+                    </div>
+                    <div class="tooltip-container">
+                        <i class="fas fa-users"></i>
+                        <p class="tooltip">Choose number of populaion 2</p>
+                    </div>
+                    <select id="populateNumberSecond">
+                        <option value="300">600</option>
+                        <option value="350">650</option>
+                        <option value="400">700</option>
+                        <option value="400">750</option>
+                        <option value="500">800</option>
+                    </select>
+                    <div class="icons">
+                        <i class="fas fa-adjust"></i>
+                    </div>
+
+                </div>
+                <div class ="severalCases">
+                        <div class="population">
+                            <div class="icons">
+                                <i id='circleDepthAndDisctance' class="fas fa-circle"></i>
+                            </div>
+                            <div class="tooltip-container">
+                                <i class="fas fa-users"></i>
+                                <p class="tooltip">Choose number of populaion 3</p>
+                            </div>
+                            <select id="populateNumberThird">
+                                <option value="300">600</option>
+                                <option value="350">650</option>
+                                <option value="400">700</option>
+                                <option value="400">750</option>
+                                <option value="500">800</option>
+                            </select>
+                            <div class="icons small">
+                                <i class="fas fa-ruler"></i>&ensp;<i class="fas fa-adjust"></i>
+                            </div>
+                        </div>
+                        <div class="adjust">
+                            <div class="adjust__icons">
+                                <i class="fas fa-ruler"></i><i class="fas fa-adjust"></i>
+                            </div>
+                            <div><input id = 'weight' type="range" min="1" max="100" step="1" value="50"></div>
+                        </div>
                 </div>
             </div>
         </div>

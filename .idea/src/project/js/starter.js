@@ -4,15 +4,19 @@ import * as jenetic from "../js/jeneticEngine.js";
 
 const numberExtrenums = 10;
 
-const colorGenes1 = '#8a45f2';
-const colorGenes2 = '#cdf223'
+const colorGenesDepth = '#ff00fe';
+const colorGenesDistance = '#3d92f2';
+const colorGenesDistanceAndDepth = '#f2093b';
 const canvasWidth = 600;
 const canvasHeight= 500;
 const genesDefault = 300;
 
 let currentPopulation = -1;
 
-function purpose1(scope, extrenums, globalExtrenum) {
+let wFirtst = 1/2;
+let wSecond = 1/2;
+
+function purposeDepth(scope, extrenums, globalExtremums) {
     scope.cost = 0;
     extrenums.forEach(extremum => {
         let distance = Math.sqrt(Math.pow(Math.floor(scope.x - extremum.x), 2) + Math.pow(Math.floor(scope.y - extremum.y), 2));
@@ -22,9 +26,9 @@ function purpose1(scope, extrenums, globalExtrenum) {
     });
 }
 
-function purpose2(scope, extrenums, globalExtrenum) {
+function purposeDistnace(scope, extrenums, globalExtremums) {
 
-    let newDistance = Math.sqrt(Math.pow(Math.floor(scope.x - globalExtrenum.x), 2) + Math.pow(Math.floor(scope.y - globalExtrenum.y), 2));
+    let newDistance = Math.sqrt(Math.pow(Math.floor(scope.x - globalExtremums[0].x), 2) + Math.pow(Math.floor(scope.y - globalExtremums[0].y), 2));
     scope.cost = -1;
 
     extrenums.forEach(extremum => {
@@ -35,11 +39,36 @@ function purpose2(scope, extrenums, globalExtrenum) {
     });
 }
 
+function purposeDistnaceAndDepth(scope, extrenums, globalExtremums) {
+
+    let criterionDistanceCost = -1;
+    let criterionDepthCost = -1;
+    scope.cost = -1;
+
+    let criterionDistance = Math.sqrt(Math.pow(Math.floor(scope.x - globalExtremums[0].x), 2) + Math.pow(Math.floor(scope.y - globalExtremums[0].y), 2));
+
+    extrenums.forEach(extremum => {
+        let distance = Math.sqrt(Math.pow(Math.floor(scope.x - extremum.x), 2) + Math.pow(Math.floor(scope.y - extremum.y), 2));
+        if (distance <= extremum.radius) {
+            criterionDistanceCost = criterionDistance;
+        }
+    });
+
+    extrenums.forEach(extremum => {
+        let distance = Math.sqrt(Math.pow(Math.floor(scope.x - extremum.x), 2) + Math.pow(Math.floor(scope.y - extremum.y), 2));
+        if (distance <= extremum.radius) {
+            criterionDepthCost = extremum.depth;
+        }
+    });
+
+    scope.cost = wSecond * (criterionDistanceCost / globalExtremums[1].cost) + wFirtst * (criterionDepthCost / globalExtremums[0].cost);
+}
+
 function createPurposes() {
     let purposes = [];
-    purposes.push(purpose.generatePurpose('name1', colorGenes1, purpose1));
-    purposes.push(purpose.generatePurpose('name2', colorGenes2, purpose2));
-
+    purposes.push(purpose.generatePurpose('Depth', colorGenesDepth, purposeDepth));
+    purposes.push(purpose.generatePurpose('Distance', colorGenesDistance, purposeDistnace));
+    purposes.push(purpose.generatePurpose('Distance and Depth', colorGenesDistanceAndDepth, purposeDistnaceAndDepth));
     return purposes;
 }
 function forParallelCases(current) {
@@ -67,7 +96,7 @@ function launchProgram(genesNumber) {
     let intersetExtrenum;
 
     createPurposes().forEach((purpose, index) => {
-        const population = new jenetic.Population((index+1)*genesNumber, intersetExtrenum, purpose.color, extremums, ctx, canvasWidth, canvasHeight);
+        const population = new jenetic.Population(genesNumber[index], intersetExtrenum, purpose.color, extremums, ctx, canvasWidth, canvasHeight);
         populationsArray.push(population);
         population.calcCost = purpose.purposeFunction;
         population.pause = true;
@@ -104,9 +133,18 @@ document.getElementById('start_button').addEventListener('click', () => {
         }
     } else {
         if (populationsArray && populationsArray.length > 0) return;
-        let genes = parseInt(document.getElementById('populateNumber').value);
-        if (!genes) genes = genesDefault;
+        let genes = [];
+        genes.push(parseInt(document.getElementById('populateNumberFirst').value));
+        genes.push(parseInt(document.getElementById('populateNumberSecond').value));
+        genes.push(parseInt(document.getElementById('populateNumberThird').value));
 
+        let weight2 = document.getElementById('weight').value;
+        let weight1 = 100 - weight2;
+        let division = weight1/weight2
+        wFirtst = 1/(1+division);
+        wSecond = wFirtst * division;
+        console.log('wFirst ', wFirtst);
+        console.log('wSecond ', wSecond);
         launchProgram(genes);
     }
 });
@@ -140,12 +178,14 @@ function stop() {
 document.getElementById('stop_button').addEventListener('click', () => {
     stop();
 });
-document.getElementById('populateNumber').focus();
 
 function init(){;
     jenetic.clearGlobalExtrem();
     currentPopulation = -1;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    document.getElementById('circleDepthAndDisctance').style.color = colorGenesDistanceAndDepth;
+    document.getElementById('circleDepth').style.color = colorGenesDistance;
+    document.getElementById('circleDistance').style.color = colorGenesDepth;
 }
 
 init();

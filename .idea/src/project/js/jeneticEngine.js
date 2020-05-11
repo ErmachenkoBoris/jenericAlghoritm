@@ -88,13 +88,7 @@ Population.prototype.display = function() {
         this.ctx.fill();
         this.ctx.stroke();
     }
-    if(this.interestExtremum && this.interestExtremum.x && this.interestExtremum.y) {
-        this.ctx.beginPath();
-        this.ctx.arc(Math.floor(this.interestExtremum.x), Math.floor(this.interestExtremum.y), circleRadius*2, 0, 2 * Math.PI);
-        this.ctx.fillStyle = colorExtrenum;
-        this.ctx.fill();
-        this.ctx.stroke();
-    }
+    this.drawResults(false);
 
 };
 
@@ -131,23 +125,25 @@ Population.prototype.sort = function() {
 }
 Population.prototype.executing = false;
 
-Population.prototype.drawResults = function() {
+Population.prototype.drawResults = function(clean) {
     if(this.pause) {
         return;
     }
-    this.ctx.clearRect(0, 0, canvas.width, canvas.height);
-    for (let i = 0; i < this.extremums.length; i++) {
-        this.ctx.beginPath();
-        this.ctx.arc(Math.floor(this.extremums[i].x), Math.floor(this.extremums[i].y), this.extremums[i].radius, 0, 2 * Math.PI);
-        this.ctx.fillStyle = this.extremums[i].color;
-        this.ctx.fill();
-        this.ctx.stroke();
+    if(clean) {
+        this.ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (let i = 0; i < this.extremums.length; i++) {
+            this.ctx.beginPath();
+            this.ctx.arc(Math.floor(this.extremums[i].x), Math.floor(this.extremums[i].y), this.extremums[i].radius, 0, 2 * Math.PI);
+            this.ctx.fillStyle = this.extremums[i].color;
+            this.ctx.fill();
+            this.ctx.stroke();
+        }
     }
 
     for (let i = 0; i < globalExtremums.length; i++) {
         this.ctx.beginPath();
         this.ctx.arc(Math.floor(globalExtremums[i].x), Math.floor(globalExtremums[i].y), circleRadius*2, 0, 2 * Math.PI);
-        this.ctx.fillStyle = colorExtrenum;
+        this.ctx.fillStyle = globalExtremums[i].color;
         this.ctx.fill();
         this.ctx.stroke();
     }
@@ -156,16 +152,17 @@ Population.prototype.drawResults = function() {
 Population.prototype.generation = function() {
     this.generationNumber++;
     for (let i = 0; i < this.members.length; i++) {
-        this.calcCost(this.members[i], this.extremums, globalExtrenum);
+        this.calcCost(this.members[i], this.extremums, globalExtremums);
     }
 
     this.sort();
     this.display();
     if(checkFinish(this.members, this)) {
-        calculateGlobalExtrnum(this.members);
+        calculateGlobalExtrnum(this.members, this.colorGenes);
         this.interestExtremum = globalExtrenum;
         globalExtremums.push({...globalExtrenum});
-        this.drawResults();
+
+        this.drawResults(true);
         this.finished = true;
         return true;
     }
@@ -177,14 +174,14 @@ Population.prototype.generation = function() {
     }
 
     for (let i = 0; i < this.members.length; i++) {
-        this.calcCost(this.members[i], this.extremums, globalExtrenum);
+        this.calcCost(this.members[i], this.extremums, globalExtremums);
     }
 
     this.sort();
 
     for (let i = this.members.length / 2; i < this.members.length; i++) {
         this.members[i].mutate(0.7);
-        this.calcCost(this.members[i], this.extremums, globalExtrenum);
+        this.calcCost(this.members[i], this.extremums, globalExtremums);
     }
     let scope = this;
     if (!this.pause) {
@@ -195,28 +192,38 @@ Population.prototype.generation = function() {
 };
 
 let globalExtrenum = {
+    color: undefined,
+    cost: -1,
     x: 0,
-    y: 0
+    y: 0,
 }
 export function clearGlobalExtrem() {
     globalExtremums = [];
     globalExtremums = new Array();
     globalExtrenum = {
         x: 0,
-        y: 0
+        y: 0,
+        cost: 0,
+        color: undefined,
     };
 }
-function calculateGlobalExtrnum(members) {
+function calculateGlobalExtrnum(members, color) {
     let sumY = 0;
     let sumX = 0;
     let length = members.length / 2;
+    let cost = -1;
     for (let i = 0; i < length; i++) {
+        if(members[i].cost > cost) {
+            cost = members[i].cost;
+        };
         sumX += members[i].x;
         sumY += members[i].y;
 
     }
     globalExtrenum.x = sumX / length;
     globalExtrenum.y = sumY / length;
+    globalExtrenum.cost = cost;
+    globalExtrenum.color = color;
 }
 
 function checkFinish(members, scope) {

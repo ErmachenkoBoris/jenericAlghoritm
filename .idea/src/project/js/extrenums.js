@@ -7,8 +7,10 @@ export function Extremum(radious, depth, x, y) {
     this.children= 0;
 }
 
+export const minRadiusExtremum = 10;
+export const maxDepthExtremum = 2;
 export function generateExtremum(canvasWidth, canvasHeight) {
-    let radious = 10 + Math.random() * 30;
+    let radious = minRadiusExtremum + Math.random() * 30;
     let depth = Math.random() * 2;
     let x = radious + parseInt(Math.random() * (canvasWidth-2*radious));
     let y = radious + parseInt(Math.random() * (canvasHeight-2*radious));
