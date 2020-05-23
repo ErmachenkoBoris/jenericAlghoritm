@@ -30,6 +30,29 @@
                 </canvas>
             </div>
             <div class="main_container__menu">
+                <div class = "population single">
+                    <div class="icons">
+                        <i class="fas fa-mountain"></i>
+                    </div>
+                    <div class="tooltip-container">
+                        <i class="fas fa-sort-amount-down-alt"></i>
+                        <p class="tooltip">Choose a number of extrmums</p>
+                    </div>
+                    <select id="extremumNumber">
+                        <option value="5">5</option>
+                        <option selected="selected" value="10">10</option>
+                        <option value="30">30</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                        <option value="200">200</option>
+                        <option value="300">300</option>
+                        <option value="500">500</option>
+                    </select>
+                    <div class="icons">
+                        <i class="fas fa-redo-alt"></i>
+                        <input id="refreshExtremums" type="checkbox">
+                    </div>
+                </div>
                 <div class="population single">
                     <div class="icons">
                         <i id='circleDistance' class="fas fa-circle"></i>
@@ -93,7 +116,7 @@
                             <div class="adjust__icons">
                                 <i class="fas fa-ruler"></i><i class="fas fa-adjust"></i>
                             </div>
-                            <div><input id = 'weight' type="range" min="1" max="100" step="1" value="50"></div>
+                            <div><input class="adjust_input" id = 'weight' type="range" min="1" max="100" step="1" value="50"></div>
                         </div>
                 </div>
                 <div  id="info_main" style="display: none" class="main_container__info">

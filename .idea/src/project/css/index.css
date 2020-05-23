@@ -10,7 +10,7 @@ body {
     columns: 600px auto;
 }
 .main_container {
-    width: 800px;
+    width: 1000px;
     display: flex;
     justify-content: center;
     flex-direction: row;
@@ -25,7 +25,7 @@ body {
     background-color: #dfeaf2;
 }
 .main_container__menu {
-    width: 200px;
+    width: 400px;
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;
@@ -40,7 +40,7 @@ body {
     font-size: 22px;
 }
 .menu__buttons {
-    width: 800px;
+    width: 1000px;
     display: flex;
     justify-content: flex-start;
     flex-direction: row;
@@ -73,6 +73,7 @@ body {
     justify-content: space-between;
     width: 170px;
     height: 29px;
+    margin-bottom: 20px;
 }
 
 
@@ -106,6 +107,7 @@ body {
     font-size: 12px;
 }
 .severalCases {
+    width: 200px;
     padding: 10px;
     margin: 10px;
     display: flex;
@@ -113,11 +115,17 @@ body {
     border: 1px solid;
     border-radius: 15px;
     justify-content: center;
+    flex-direction: column;
 }
 .adjust {
     display: flex;
     flex-direction: column;
-    margin-top: 34px;
+    margin-bottom: 14px;
+
+    margin-left: 15px;
+    display: flex;
+    width: 170px;
+    height: 29px;
 }
 .adjust__icons {
     display: flex;
@@ -126,11 +134,16 @@ body {
 .single {
     margin-left: 35px;
 }
+.adjust_input {
+    width: 170px;
+}
 .main_container__info {
     margin-left: 35px;
     margin-top: 40px;
 }
 .info_container {
+    height: 150px;
+    overflow: auto;
     display: flex;
     flex-direction: column;
     align-items: center;

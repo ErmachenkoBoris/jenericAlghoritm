@@ -2,7 +2,7 @@ import * as extrem from "../js/extrenums.js";
 import * as purpose from "../js/purpose.js";
 import * as jenetic from "../js/jeneticEngine.js";
 
-const numberExtrenums = 10;
+let numberExtrenums = 10;
 
 const colorGenesDepth = '#ff00fe';
 const colorGenesDistance = '#3d92f2';
@@ -15,12 +15,13 @@ let currentPopulation = -1;
 
 let wFirtst = 1/2;
 let wSecond = 1/2;
+let extremums = [];
 
 function purposeDepth(scope, extrenums, globalExtremums) {
     scope.cost = 0;
     extrenums.forEach(extremum => {
         let distance = Math.sqrt(Math.pow(Math.floor(scope.x - extremum.x), 2) + Math.pow(Math.floor(scope.y - extremum.y), 2));
-        if (distance <= extremum.radius) {
+        if (distance <= extremum.radius &&  scope.cost <= extremum.depth) {
             scope.cost = extremum.depth;
         }
     });
@@ -56,7 +57,7 @@ function purposeDistnaceAndDepth(scope, extrenums, globalExtremums) {
 
     extrenums.forEach(extremum => {
         let distance = Math.sqrt(Math.pow(Math.floor(scope.x - extremum.x), 2) + Math.pow(Math.floor(scope.y - extremum.y), 2));
-        if (distance <= extremum.radius) {
+        if (distance <= extremum.radius && criterionDepthCost <= extremum.depth) {
             criterionDepthCost = extremum.depth;
         }
     });
@@ -73,6 +74,7 @@ function createPurposes() {
 }
 function forParallelCases(current) {
     if(current>=populationsArray.length) {
+        showInfo(current, jenetic.globalExtremums, true);
         return;
     }
     if(!populationsArray[current].finished && !populationsArray[current].generationNumber && populationsArray[current].pause ) {
@@ -91,9 +93,11 @@ function forParallelCases(current) {
     setTimeout(()=>{ forParallelCases(current);}, 0);
 
 }
-function launchProgram(genesNumber) {
+function launchProgram(genesNumber, refreshExtremums) {
 
-    let extremums = generateExtremums(10);
+    if(refreshExtremums || extremums.length === 0) {
+        extremums = generateExtremums(numberExtrenums);
+    }
     let intersetExtrenum;
 
     createPurposes().forEach((purpose, index) => {
@@ -108,12 +112,19 @@ function launchProgram(genesNumber) {
 
 function generateExtremums(numExtremums) {
     let extrenums = [];
-        for (let i = 0; i < numExtremums; i++) {
-            extrenums.push(extrem.generateExtremum(canvasWidth, canvasHeight));
+    for (let i = 0; i < numExtremums; i++) {
+        extrenums.push(extrem.generateExtremum(canvasWidth, canvasHeight));
+    }
+    let maxDepth = -1;
+    let depthIndex = -1;
+    extrenums.forEach((extremum, index) => {
+        if(extremum.depth > maxDepth) {
+            maxDepth = extremum.depth;
+            depthIndex = index;
         }
-        extrenums.sort((a, b) => a.depth - b.depth);
-        extrenums.forEach((value, index) => value.color = extrem.lightenDarkenColor(extrem.extrenumColor, -20 * index));
-        extrenums[numberExtrenums - 1].color = 'black';
+    });
+    extrenums[depthIndex].color = 'black';
+    //extrenums.sort((a, b) => a.depth - b.depth);
         return extrenums;
 }
 
@@ -138,6 +149,10 @@ document.getElementById('start_button').addEventListener('click', () => {
         genes.push(parseInt(document.getElementById('populateNumberFirst').value));
         genes.push(parseInt(document.getElementById('populateNumberSecond').value));
         genes.push(parseInt(document.getElementById('populateNumberThird').value));
+        const oldNumberExtrenums = numberExtrenums;
+        numberExtrenums = parseInt(document.getElementById('extremumNumber').value);
+
+        const refreshExtremums = document.getElementById('refreshExtremums').checked;
 
         let weight2 = document.getElementById('weight').value;
         let weight1 = 100 - weight2;
@@ -146,7 +161,7 @@ document.getElementById('start_button').addEventListener('click', () => {
         wSecond = wFirtst * division;
         console.log('wFirst ', wFirtst);
         console.log('wSecond ', wSecond);
-        launchProgram(genes);
+        launchProgram(genes, refreshExtremums || oldNumberExtrenums!==numberExtrenums);
     }
 });
 document.getElementById('pause_button').addEventListener('click', () => {
@@ -179,10 +194,18 @@ const iconPopulationTemplates = ['<i class="fas fa-ruler info_item"></i>',
     '<i class="fas fa-adjust info_item"></i>',
     '<div class="info_item"><i class="fas fa-ruler"></i>&ensp;<i class="fas fa-adjust"></i></div>'];
 
-function showInfo(current, globalExtremums) {
-    document.getElementById('info_main').style.display = 'flex';
+function showInfo(current, globalExtremums, finish) {
     const newElement = document.createElement('div');
     newElement.className = 'info';
+    if(finish) {
+        newElement.innerHTML =  '<div class="info_item">'+'------'+ '</div>';
+
+        const container = document.getElementById('info');
+        container.append(newElement);
+        return;
+    }
+    document.getElementById('info_main').style.display = 'flex';
+
     let depth  = globalExtremums[current].depth.toFixed(2);
     if(depth == 0) {
         depth = '-'

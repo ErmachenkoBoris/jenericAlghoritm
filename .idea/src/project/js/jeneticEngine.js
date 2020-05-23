@@ -73,10 +73,12 @@ Population.prototype.display = function() {
         return;
     }
     this.ctx.clearRect(0, 0, canvas.width, canvas.height);
-    for (let i = 0; i < this.extremums.length; i++) {
+    let extremumsTmp = this.extremums.slice();
+    extremumsTmp.sort((a, b) => a.depth - b.depth);
+    for (let i = 0; i < extremumsTmp.length; i++) {
         this.ctx.beginPath();
-        this.ctx.arc(Math.floor(this.extremums[i].x), Math.floor(this.extremums[i].y), this.extremums[i].radius, 0, 2 * Math.PI);
-        this.ctx.fillStyle = this.extremums[i].color;
+        this.ctx.arc(Math.floor(extremumsTmp[i].x), Math.floor(extremumsTmp[i].y), extremumsTmp[i].radius, 0, 2 * Math.PI);
+        this.ctx.fillStyle = extremumsTmp[i].color;
         this.ctx.fill();
         this.ctx.stroke();
     }
@@ -131,10 +133,12 @@ Population.prototype.drawResults = function(clean) {
     }
     if(clean) {
         this.ctx.clearRect(0, 0, canvas.width, canvas.height);
-        for (let i = 0; i < this.extremums.length; i++) {
+        const extremumsTmp = this.extremums.slice();
+        extremumsTmp.sort((a, b) => a.depth - b.depth);
+        for (let i = 0; i < extremumsTmp.length; i++) {
             this.ctx.beginPath();
-            this.ctx.arc(Math.floor(this.extremums[i].x), Math.floor(this.extremums[i].y), this.extremums[i].radius, 0, 2 * Math.PI);
-            this.ctx.fillStyle = this.extremums[i].color;
+            this.ctx.arc(Math.floor(extremumsTmp[i].x), Math.floor(extremumsTmp[i].y), extremumsTmp[i].radius, 0, 2 * Math.PI);
+            this.ctx.fillStyle = extremumsTmp[i].color;
             this.ctx.fill();
             this.ctx.stroke();
         }
@@ -255,7 +259,4 @@ function checkFinish(members, scope) {
     }
     return false;
 }
-
-
-
 
