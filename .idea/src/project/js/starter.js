@@ -16,6 +16,7 @@ let currentPopulation = -1;
 let wFirtst = 1/2;
 let wSecond = 1/2;
 let extremums = [];
+let globalExtremums = [];
 
 function purposeDepth(scope, extrenums, globalExtremums) {
     scope.cost = 0;
@@ -65,16 +66,18 @@ function purposeDistnaceAndDepth(scope, extrenums, globalExtremums) {
     scope.cost = wSecond * (criterionDistanceCost / globalExtremums[1].cost) + wFirtst * (criterionDepthCost / globalExtremums[0].cost);
 }
 
-function createPurposes() {
+function createPurposes(newRules) {
     let purposes = [];
-    purposes.push(purpose.generatePurpose('Depth', colorGenesDepth, purposeDepth));
-    purposes.push(purpose.generatePurpose('Distance', colorGenesDistance, purposeDistnace));
+    if(newRules) {
+        purposes.push(purpose.generatePurpose('Depth', colorGenesDepth, purposeDepth));
+        purposes.push(purpose.generatePurpose('Distance', colorGenesDistance, purposeDistnace));
+    }
     purposes.push(purpose.generatePurpose('Distance and Depth', colorGenesDistanceAndDepth, purposeDistnaceAndDepth));
     return purposes;
 }
 function forParallelCases(current) {
     if(current>=populationsArray.length) {
-        showInfo(current, jenetic.globalExtremums, true);
+        showInfo(populationsArray[current-1].name, jenetic.globalExtremums, true);
         return;
     }
     if(!populationsArray[current].finished && !populationsArray[current].generationNumber && populationsArray[current].pause ) {
@@ -83,10 +86,7 @@ function forParallelCases(current) {
         populationsArray[current].generation();
     } else {
         if(populationsArray[current].finished) {
-            populationsArray.forEach(population => {
-                population.interestExtremum = populationsArray[current].interestExtremum;
-            });
-            showInfo(current, jenetic.globalExtremums);
+            showInfo(populationsArray[current].name, jenetic.globalExtremums);
             current++;
         }
     }
@@ -94,20 +94,24 @@ function forParallelCases(current) {
 
 }
 function launchProgram(genesNumber, refreshExtremums) {
+    let firstAttempt = false;
+    if(extremums.length === 0) {
+        firstAttempt = true;
+    }
 
-    if(refreshExtremums || extremums.length === 0) {
+    if(refreshExtremums || firstAttempt) {
         extremums = generateExtremums(numberExtrenums);
     }
-    let intersetExtrenum;
 
-    createPurposes().forEach((purpose, index) => {
-        const population = new jenetic.Population(genesNumber[index], intersetExtrenum, purpose.color, extremums, ctx, canvasWidth, canvasHeight);
+    createPurposes(refreshExtremums || firstAttempt).forEach((purpose, index) => {
+        const population = new jenetic.Population(genesNumber[index], purpose.color, extremums, ctx, canvasWidth, canvasHeight, purpose.name);
         populationsArray.push(population);
         population.calcCost = purpose.purposeFunction;
         population.pause = true;
     });
 
     forParallelCases(0);
+    firstAttempt = false;
 }
 
 function generateExtremums(numExtremums) {
@@ -153,14 +157,19 @@ document.getElementById('start_button').addEventListener('click', () => {
         numberExtrenums = parseInt(document.getElementById('extremumNumber').value);
 
         const refreshExtremums = document.getElementById('refreshExtremums').checked;
+        const wholeUnit = +document.getElementById('adjust_first').value + +document.getElementById('adjust_second').value;
 
-        let weight2 = document.getElementById('weight').value;
-        let weight1 = 100 - weight2;
-        let division = weight1/weight2
-        wFirtst = 1/(1+division);
-        wSecond = wFirtst * division;
+        let weight2 = document.getElementById('adjust_first').value/wholeUnit;
+        let weight1 = document.getElementById('adjust_second').value/wholeUnit;
+
+        wFirtst = weight1;
+        wSecond = weight2;
+
         console.log('wFirst ', wFirtst);
         console.log('wSecond ', wSecond);
+        if(refreshExtremums || oldNumberExtrenums!==numberExtrenums) {
+            init();
+        }
         launchProgram(genes, refreshExtremums || oldNumberExtrenums!==numberExtrenums);
     }
 });
@@ -188,13 +197,13 @@ function stop() {
     populationsArray.forEach(population => {population.pause = true;
     });
     populationsArray = [];
-    setTimeout(init, 0);
 }
 const iconPopulationTemplates = ['<i class="fas fa-ruler info_item"></i>',
     '<i class="fas fa-adjust info_item"></i>',
     '<div class="info_item"><i class="fas fa-ruler"></i>&ensp;<i class="fas fa-adjust"></i></div>'];
 
-function showInfo(current, globalExtremums, finish) {
+function showInfo(name, globalExtremums, finish) {
+    const current = getNumberOfName(name);
     const newElement = document.createElement('div');
     newElement.className = 'info';
     if(finish) {
@@ -231,6 +240,20 @@ function init(){;
     document.getElementById('circleDepthAndDisctance').style.color = colorGenesDistanceAndDepth;
     document.getElementById('circleDepth').style.color = colorGenesDistance;
     document.getElementById('circleDistance').style.color = colorGenesDepth;
+}
+
+function getNumberOfName(name) {
+    console.log('name ', name);
+    switch (name) {
+        case 'Depth': return 0;
+        case 'Distance': return 1;
+        case 'Distance and Depth': return 2;
+    }
+    if(newRules) {
+        purposes.push(purpose.generatePurpose('Depth', colorGenesDepth, purposeDepth));
+        purposes.push(purpose.generatePurpose('Distance', colorGenesDistance, purposeDistnace));
+    }
+    purposes.push(purpose.generatePurpose('Distance and Depth', colorGenesDistanceAndDepth, purposeDistnaceAndDepth));
 }
 
 init();

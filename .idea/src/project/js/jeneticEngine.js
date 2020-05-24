@@ -46,14 +46,14 @@ Gene.prototype.mate = function(gene) {
 };
 Gene.prototype.calcCost = function(scope, extremums) {
 };
-export function Population(size, interestExtremum, colorGenes, extremums, canvas, cW, cH) {
+export function Population(size, colorGenes, extremums, canvas, cW, cH, name) {
+    this.name = name;
     canvasWidth = cW;
     canvasHeight = cH;
     this.pause = false;
     this.size = size;
     this.ctx = canvas;
     this.finished = false;
-    this.interestExtremum = interestExtremum;
     this.extremums = extremums;
     this.members = [];
     this.colorGenes = colorGenes;
@@ -163,7 +163,6 @@ Population.prototype.generation = function() {
     this.display();
     if(checkFinish(this.members, this)) {
         calculateGlobalExtrnum(this.members, this.colorGenes, this.extremums);
-        this.interestExtremum = globalExtrenum;
         globalExtremums.push({...globalExtrenum});
 
         this.drawResults(true);
