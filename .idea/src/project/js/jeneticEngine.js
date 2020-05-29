@@ -1,10 +1,16 @@
 const circleRadius = 2;
 const timeOneRound = 150;
 
+let viewMode = 'map';
+
 let canvasWidth;
 let canvasHeight;
 const colorExtrenum = '#f21c14';
 export let globalExtremums = new Array();
+
+export function setVewMode(mode) {
+    viewMode = mode;
+}
 
 function Gene(x, y) {
     this.success = 0;
@@ -75,22 +81,42 @@ Population.prototype.display = function() {
     this.ctx.clearRect(0, 0, canvas.width, canvas.height);
     let extremumsTmp = this.extremums.slice();
     extremumsTmp.sort((a, b) => a.depth - b.depth);
-    for (let i = 0; i < extremumsTmp.length; i++) {
-        this.ctx.beginPath();
-        this.ctx.arc(Math.floor(extremumsTmp[i].x), Math.floor(extremumsTmp[i].y), extremumsTmp[i].radius, 0, 2 * Math.PI);
-        this.ctx.fillStyle = extremumsTmp[i].color;
-        this.ctx.fill();
-        this.ctx.stroke();
+    if(viewMode == 'map') {
+        for (let i = 0; i < extremumsTmp.length; i++) {
+            this.ctx.beginPath();
+            this.ctx.arc(Math.floor(extremumsTmp[i].x), Math.floor(extremumsTmp[i].y), extremumsTmp[i].radius, 0, 2 * Math.PI);
+            this.ctx.fillStyle = extremumsTmp[i].color;
+            this.ctx.fill();
+            this.ctx.stroke();
+        }
+
+        for (let i = 0; i < this.members.length; i++) {
+            this.ctx.beginPath();
+            this.ctx.arc(Math.floor(this.members[i].x), Math.floor(this.members[i].y), circleRadius, 0, 2 * Math.PI);
+            this.ctx.fillStyle = this.colorGenes;
+            this.ctx.fill();
+            this.ctx.stroke();
+        }
+        this.drawResults(false);
+    } else {
+        for (let i = 0; i < extremumsTmp.length; i++) {
+            this.ctx.beginPath();
+            this.ctx.arc(Math.floor(extremumsTmp[i].x), Math.floor(extremumsTmp[i].y), extremumsTmp[i].radius, 0, 2 * Math.PI);
+            this.ctx.fillStyle = extremumsTmp[i].color;
+            this.ctx.fill();
+            this.ctx.stroke();
+        }
+
+        for (let i = 0; i < this.members.length; i++) {
+            this.ctx.beginPath();
+            this.ctx.arc(Math.floor(this.members[i].x), Math.floor(this.members[i].y), circleRadius, 0, 2 * Math.PI);
+            this.ctx.fillStyle = this.colorGenes;
+            this.ctx.fill();
+            this.ctx.stroke();
+        }
+        this.drawResults(false);
     }
 
-    for (let i = 0; i < this.members.length; i++) {
-        this.ctx.beginPath();
-        this.ctx.arc(Math.floor(this.members[i].x), Math.floor(this.members[i].y), circleRadius, 0, 2 * Math.PI);
-        this.ctx.fillStyle = this.colorGenes;
-        this.ctx.fill();
-        this.ctx.stroke();
-    }
-    this.drawResults(false);
 
 };
 

@@ -183,6 +183,12 @@ document.getElementById('pause_button').addEventListener('click', () => {
 
 });
 
+let checkboxViewMode = document.getElementById('viewMode')
+
+checkboxViewMode.addEventListener('change', () => {
+
+});
+
 function pause() {
     if(currentPopulation >= 0) {
         const pause = populationsArray[currentPopulation].pause;
