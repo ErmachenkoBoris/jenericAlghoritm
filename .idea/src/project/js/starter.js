@@ -62,7 +62,7 @@ function purposeDistnaceAndDepth(scope, extrenums, globalExtremums) {
             criterionDepthCost = extremum.depth;
         }
     });
-
+    scope.extremumDistance = criterionDistanceCost / globalExtremums[1].cost;
     scope.cost = wSecond * (criterionDistanceCost / globalExtremums[1].cost) + wFirtst * (criterionDepthCost / globalExtremums[0].cost);
 }
 
