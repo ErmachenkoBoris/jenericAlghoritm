@@ -12,14 +12,18 @@ export function setVewMode(mode) {
     viewMode = mode;
 }
 
-function Gene(x, y) {
+function Gene(x, y, cost, extremumDistance, extremumDepth) {
     this.success = 0;
-    this.cost = 0;
+    this.cost = cost;
+    this.extremumDistance = extremumDistance;
+    this.extremumDepth = extremumDepth;
     if (x) this.x = x % canvasWidth;
     if (y) this.y = y % canvasHeight;
 };
 Gene.prototype.x = 0;
 Gene.prototype.y = 0;
+Gene.prototype.extremumDistance = 0;
+Gene.prototype.extremumDepth = 0;
 Gene.prototype.random = function() {
     this.x = Math.random() * canvasWidth;
     this.y = Math.random() * canvasHeight;
@@ -74,31 +78,37 @@ export function Population(size, colorGenes, extremums, canvas, cW, cH, name) {
 };
 Population.prototype.calcCost = function(scope, extremums) {
 };
+
+let clearFlag = true;
+
 Population.prototype.display = function() {
     if(this.pause) {
         return;
     }
-    this.ctx.clearRect(0, 0, canvas.width, canvas.height);
+
     let extremumsTmp = this.extremums.slice();
     extremumsTmp.sort((a, b) => a.depth - b.depth);
-    if(viewMode == 'map') {
-        for (let i = 0; i < extremumsTmp.length; i++) {
-            this.ctx.beginPath();
-            this.ctx.arc(Math.floor(extremumsTmp[i].x), Math.floor(extremumsTmp[i].y), extremumsTmp[i].radius, 0, 2 * Math.PI);
-            this.ctx.fillStyle = extremumsTmp[i].color;
-            this.ctx.fill();
-            this.ctx.stroke();
+    if(viewMode != 'map' && this.name == 'Distance and Depth') {
+        if(clearFlag) {
+            this.ctx.clearRect(0, 0, canvas.width, canvas.height);
+            clearFlag = false;
         }
-
+        drawField(this.ctx);
         for (let i = 0; i < this.members.length; i++) {
             this.ctx.beginPath();
-            this.ctx.arc(Math.floor(this.members[i].x), Math.floor(this.members[i].y), circleRadius, 0, 2 * Math.PI);
+            console.log(this.members[i]);
+            this.ctx.arc(
+                canvasWidth/2 + Math.floor(200*this.members[i].extremumDistance),
+                canvasHeight/2 - Math.floor(200*this.members[i].extremumDepth),
+                circleRadius + 4*this.members[i].cost,
+                0,
+                2 * Math.PI);
             this.ctx.fillStyle = this.colorGenes;
             this.ctx.fill();
             this.ctx.stroke();
         }
-        this.drawResults(false);
     } else {
+        this.ctx.clearRect(0, 0, canvas.width, canvas.height);
         for (let i = 0; i < extremumsTmp.length; i++) {
             this.ctx.beginPath();
             this.ctx.arc(Math.floor(extremumsTmp[i].x), Math.floor(extremumsTmp[i].y), extremumsTmp[i].radius, 0, 2 * Math.PI);
@@ -134,14 +144,26 @@ Population.prototype.sort = function() {
             }
         }
 
-        let tmpGene = new Gene(this.members[maxj].x, this.members[maxj].y);
-        tmpGene.cost = this.members[maxj].cost;
+        let tmpGene = new Gene(
+            this.members[maxj].x,
+            this.members[maxj].y,
+            this.members[maxj].cost,
+            this.members[maxj].extremumDistance,
+            this.members[maxj].extremumDepth);
 
-        this.members[maxj] = new Gene(this.members[i].x, this.members[i].y);
-        this.members[maxj].cost = this.members[i].cost;
+        this.members[maxj] = new Gene(
+            this.members[i].x,
+            this.members[i].y,
+            this.members[i].cost,
+            this.members[i].extremumDistance,
+            this.members[i].extremumDepth);
 
-        this.members[i] = new Gene(tmpGene.x, tmpGene.y);
-        this.members[i].cost = tmpGene.cost;
+        this.members[i] = new Gene(
+            tmpGene.x,
+            tmpGene.y,
+            tmpGene.cost,
+            tmpGene.extremumDistance,
+            tmpGene.extremumDepth);
     }
 
     let tmpArr = new Array();
@@ -191,7 +213,11 @@ Population.prototype.generation = function() {
         calculateGlobalExtrnum(this.members, this.colorGenes, this.extremums);
         globalExtremums.push({...globalExtrenum});
 
-        this.drawResults(true);
+        if(!(viewMode != 'map' && this.name == 'Distance and Depth')) {
+            this.drawResults(true);
+        } else {
+            clearFlag = true;
+        }
         this.finished = true;
         return true;
     }
@@ -283,5 +309,44 @@ function checkFinish(members, scope) {
         scope.oldValue = members[0].cost;
     }
     return false;
+}
+
+function drawField (ctx) {
+    ctx.fillStyle = 'black';
+    const halfWidth = canvasWidth / 2;
+    const halfHeight = canvasHeight / 2;
+    // --------------------draw field---------------------------
+    ctx.strokeStyle = 'silver';
+    for (let i = 0; i < canvasWidth; i += 50) {
+        for (let j = 0; j < canvasHeight; j += 50) {
+            ctx.strokeRect(i, j, 50, 50);
+        }
+    }
+
+    for (let i = -canvasWidth; i < canvasWidth; i += 50) {
+
+        if(i!=250) {
+            ctx.fillText(i / 2, halfWidth + i, halfHeight);
+            ctx.fillText(-i/2, halfWidth, halfHeight + i);
+        } else {
+            ctx.fillText('DISTANCE', halfWidth + i, halfHeight);
+            ctx.fillText('DEPTH', halfWidth, halfHeight - i);
+            return;
+        }
+
+    }
+
+
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = 'black';
+    ctx.beginPath();
+    ctx.moveTo(halfWidth, 0);
+    ctx.lineTo(halfWidth, canvasHeight);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(0, halfHeight);
+    ctx.lineTo(canvasWidth, halfHeight);
+    ctx.stroke();
 }
 

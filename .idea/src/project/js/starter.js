@@ -8,7 +8,7 @@ const colorGenesDepth = '#ff00fe';
 const colorGenesDistance = '#3d92f2';
 const colorGenesDistanceAndDepth = '#f2093b';
 const canvasWidth = 600;
-const canvasHeight= 500;
+const canvasHeight= 600;
 const genesDefault = 300;
 
 let currentPopulation = -1;
@@ -43,9 +43,9 @@ function purposeDistnace(scope, extrenums, globalExtremums) {
 
 function purposeDistnaceAndDepth(scope, extrenums, globalExtremums) {
 
-    let criterionDistanceCost = -1;
-    let criterionDepthCost = -1;
-    scope.cost = -1;
+    let criterionDistanceCost = 0;
+    let criterionDepthCost = 0;
+    scope.cost = 0;
 
     let criterionDistance = Math.sqrt(Math.pow(Math.floor(scope.x - globalExtremums[0].x), 2) + Math.pow(Math.floor(scope.y - globalExtremums[0].y), 2));
 
@@ -65,6 +65,7 @@ function purposeDistnaceAndDepth(scope, extrenums, globalExtremums) {
     scope.extremumDistance = criterionDistanceCost / globalExtremums[1].cost;
     scope.extremumDepth = criterionDepthCost / globalExtremums[0].cost;
     scope.cost = wSecond * (criterionDistanceCost / globalExtremums[1].cost) + wFirtst * (criterionDepthCost / globalExtremums[0].cost);
+    console.log('scope ', scope);
 }
 
 function createPurposes(newRules) {
@@ -187,7 +188,11 @@ document.getElementById('pause_button').addEventListener('click', () => {
 let checkboxViewMode = document.getElementById('viewMode')
 
 checkboxViewMode.addEventListener('change', () => {
-
+    if(!checkboxViewMode.checked) {
+        jenetic.setVewMode('dekart');
+    } else {
+        jenetic.setVewMode('map');
+    }
 });
 
 function pause() {
