@@ -14,15 +14,15 @@
             <div class="menu__buttons">
                 <div class="tooltip-container">
                     <i id="start_button" class="fas fa-play button start_button"></i>
-                    <p class="tooltip">Press to start</p>
+                    <p class="tooltip"><i class="far fa-lightbulb"></i>&nbsp;Press to start</p>
                 </div>
                 <div class="tooltip-container">
                     <i id="pause_button" class="far fa-pause-circle button pause_butto"></i>
-                    <p class="tooltip">Press to pause</p>
+                    <p class="tooltip"><i class="far fa-lightbulb"></i>&nbsp;Press to pause</p>
                 </div>
                 <div class="tooltip-container">
                     <i id="stop_button" class="fas fa-stop button stop_button"></i>
-                    <p class="tooltip">Press to stop</p>
+                    <p class="tooltip"><i class="far fa-lightbulb"></i>&nbsp;Press to stop</p>
                 </div>
                 <div>
                     <label class="switch">
@@ -42,7 +42,7 @@
                     </div>
                     <div class="tooltip-container">
                         <i class="fas fa-sort-amount-down-alt"></i>
-                        <p class="tooltip">Choose a number of extrmums</p>
+                        <p class="tooltip"><i class="far fa-lightbulb"></i>&nbsp;Choose a number of extrmums</p>
                     </div>
                     <select id="extremumNumber">
                         <option value="5">5</option>
@@ -65,7 +65,7 @@
                     </div>
                     <div class="tooltip-container">
                         <i class="fas fa-users"></i>
-                        <p class="tooltip">Choose number of populaion 1</p>
+                        <p class="tooltip"><i class="far fa-lightbulb"></i>&nbsp;Choose number of populaion 1</p>
                     </div>
                     <select id="populateNumberFirst">
                         <option value="300">300</option>
@@ -84,7 +84,7 @@
                     </div>
                     <div class="tooltip-container">
                         <i class="fas fa-users"></i>
-                        <p class="tooltip">Choose number of populaion 2</p>
+                        <p class="tooltip"><i class="far fa-lightbulb"></i>&nbsp;Choose number of populaion 2</p>
                     </div>
                     <select id="populateNumberSecond">
                         <option value="300">600</option>
@@ -105,7 +105,7 @@
                             </div>
                             <div class="tooltip-container">
                                 <i class="fas fa-users"></i>
-                                <p class="tooltip">Choose number of populaion 3</p>
+                                <p class="tooltip"><i class="far fa-lightbulb"></i>&nbsp;Choose number of populaion 3</p>
                             </div>
                             <select id="populateNumberThird">
                                 <option value="300">600</option>
@@ -131,7 +131,13 @@
                 </div>
                 <div  id="info_main" style="display: none" class="main_container__info">
                     <div class="info_icon"><i class="fas fa-info-circle"></i></div>
-                    <div id="info" class="info_container"></div>
+                    <div class="info_container">
+                        <table cellpadding="5" cellspacing="3" >
+                            <tr><th>Mode</th><th>Depth</th><th>Distance</th><th>Weight Depth</th><th>Deight Disctance</th></tr>
+                        </table>
+                        <table id="info"cellpadding="5" cellspacing="3" class="info_container">
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>

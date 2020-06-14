@@ -1,4 +1,4 @@
-import * as extrem from "../js/extrenums.js";
+import * as extrem from "../js/extremums.js";
 import * as purpose from "../js/purpose.js";
 import * as jenetic from "../js/jeneticEngine.js";
 
@@ -65,7 +65,6 @@ function purposeDistnaceAndDepth(scope, extrenums, globalExtremums) {
     scope.extremumDistance = criterionDistanceCost / globalExtremums[1].cost;
     scope.extremumDepth = criterionDepthCost / globalExtremums[0].cost;
     scope.cost = wSecond * (criterionDistanceCost / globalExtremums[1].cost) + wFirtst * (criterionDepthCost / globalExtremums[0].cost);
-    console.log('scope ', scope);
 }
 
 function createPurposes(newRules) {
@@ -216,16 +215,13 @@ const iconPopulationTemplates = ['<i class="fas fa-ruler info_item"></i>',
 
 function showInfo(name, globalExtremums, finish) {
     const current = getNumberOfName(name);
-    const newElement = document.createElement('div');
-    newElement.className = 'info';
+    const newElement = document.createElement('tr');
     if(finish) {
-        newElement.innerHTML =  '<div class="info_item">'+'------'+ '</div>';
-
         const container = document.getElementById('info');
-        container.append(newElement);
+        container.appendChild(newElement);
         return;
     }
-    document.getElementById('info_main').style.display = 'flex';
+    document.getElementById('info_main').style.display = 'block';
 
     let depth  = globalExtremums[current].depth.toFixed(2);
     if(depth == 0) {
@@ -235,10 +231,16 @@ function showInfo(name, globalExtremums, finish) {
     if(distance == 0) {
         distance = '-'
     };
-    newElement.innerHTML = iconPopulationTemplates[current] + '<div class="info_item">' + depth + '</div>'+ '<div class="info_item">' + distance + '</div>';
+    newElement.innerHTML =
+        '<td>' + iconPopulationTemplates[current] + '</td>'
+        +'<td>' + depth +' c.u.'+'</td>'
+        +'<td>' + distance +' c.u.'+ '</td>'
+        +'<td>' + wFirtst.toFixed(2) +'</td>'
+        +'<td>' + wSecond.toFixed(2) + '</td>'
+    ;
 
     const container = document.getElementById('info');
-    container.append(newElement);
+    container.appendChild(newElement);
 }
 
 document.getElementById('stop_button').addEventListener('click', () => {
@@ -255,7 +257,6 @@ function init(){;
 }
 
 function getNumberOfName(name) {
-    console.log('name ', name);
     switch (name) {
         case 'Depth': return 0;
         case 'Distance': return 1;
