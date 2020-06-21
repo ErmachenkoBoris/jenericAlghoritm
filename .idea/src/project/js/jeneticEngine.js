@@ -7,6 +7,10 @@ let canvasWidth;
 let canvasHeight;
 const colorExtrenum = '#f21c14';
 const blackColor = '#000000';
+const scaleDistance = 0.5;
+const scaleDepth = 200;
+const widthOffset = 100;
+let heightOffset;
 export let globalExtremums = new Array();
 
 export function setVewMode(mode) {
@@ -73,6 +77,7 @@ export function Population(size, colorGenes, extremums, canvas, cW, cH, name) {
     }
     this.oldValue;
     this.countFinish = 0;
+    heightOffset = canvasHeight - 100;
 };
 Population.prototype.calcCost = function(scope, extremums) {
 };
@@ -92,12 +97,11 @@ Population.prototype.display = function() {
             clearFlag = false;
         }
         drawField(this.ctx);
-        // this.drawResults(false, viewMode);
         for (let i = 0; i < this.members.length; i++) {
             this.ctx.beginPath();
             this.ctx.arc(
-                canvasWidth/2 + Math.floor(200*this.members[i].extremumDistance),
-                canvasHeight/2 - Math.floor(200*this.members[i].extremumDepth),
+                widthOffset+ Math.floor(scaleDistance*this.members[i].extremumDistance*globalExtremums[1].cost),
+                heightOffset - Math.floor(scaleDepth*this.members[i].extremumDepth*globalExtremums[0].cost),
                 circleRadius + 4*this.members[i].cost,
                 0,
                 2 * Math.PI);
@@ -108,7 +112,6 @@ Population.prototype.display = function() {
         this.drawResults(false, viewMode);
     } else {
         this.ctx.clearRect(0, 0, canvas.width, canvas.height);
-       // this.drawResults(false, viewMode);
         for (let i = 0; i < extremumsTmp.length; i++) {
             this.ctx.beginPath();
             this.ctx.arc(Math.floor(extremumsTmp[i].x), Math.floor(extremumsTmp[i].y), extremumsTmp[i].radius, 0, 2 * Math.PI);
@@ -202,15 +205,14 @@ Population.prototype.drawResults = function(clean, viewModeLocal) {
         const l = globalExtremums.length;
         this.ctx.beginPath();
         this.ctx.arc(
-            canvasWidth/2 + Math.floor(200 * globalExtremums[l-1].extremumDistance),
-            canvasHeight/2 - Math.floor(200* globalExtremums[l-1].extremumDepth),
+            widthOffset + Math.floor(scaleDistance * globalExtremums[l-1].extremumDistance * globalExtremums[1].cost),
+            heightOffset - Math.floor(scaleDepth * globalExtremums[l-1].extremumDepth * globalExtremums[0].cost),
             circleRadius + 4*globalExtremums[l-1].cost,
             0,
             2 * Math.PI);
         this.ctx.fillStyle = blackColor;
         this.ctx.fill();
         this.ctx.stroke();
-
     }
 }
 
@@ -229,6 +231,7 @@ Population.prototype.generation = function() {
         globalExtremums.push({...globalExtrenum});
         this.drawResults(true, viewMode);
         this.finished = true;
+        clearFlag = true;
         return true;
     }
 
@@ -306,10 +309,10 @@ function calculateGlobalExtrnum(members, color, extremums) {
         const y = globalExtremums[0].y;
         globalExtrenum.distance = Math.sqrt(Math.pow(Math.floor(x - globalExtrenum.x), 2) + Math.pow(Math.floor(y - globalExtrenum.y), 2));
     }
-
+    globalExtrenum.depth = 0;
     extremums.forEach(extremum => {
         let distance = Math.sqrt(Math.pow(Math.floor( globalExtrenum.x  - extremum.x), 2) + Math.pow(Math.floor(globalExtrenum.y - extremum.y), 2));
-        if (distance <= extremum.radius) {
+        if (distance <= extremum.radius && globalExtrenum.depth<=extremum.depth) {
             globalExtrenum.depth  = extremum.depth;
         }
     });
@@ -331,8 +334,6 @@ function checkFinish(members, scope) {
 function drawField (ctx) {
     const edge = 250;
     ctx.fillStyle = 'black';
-    const halfWidth = canvasWidth / 2;
-    const halfHeight = canvasHeight / 2;
     ctx.strokeStyle = 'silver';
     for (let i = 0; i < canvasWidth; i += 50) {
         for (let j = 0; j < canvasHeight; j += 50) {
@@ -340,18 +341,18 @@ function drawField (ctx) {
         }
     }
 
-    for (let i = -canvasWidth; i < canvasWidth; i += 50) {
-        if(i!=250) {
+    for (let i = 0; i < canvasWidth; i += 50) {
+        if(i!=400) {
             if(i==0){
-                ctx.fillText(0, halfWidth, halfHeight);
+                ctx.fillText(0, widthOffset, heightOffset);
             } else {
-                ctx.fillText((globalExtremums[0].cost/((edge-50) / i)).toFixed(2), halfWidth + i, halfHeight);
-                ctx.fillText((-globalExtremums[1].cost/((edge-50)  / i)).toFixed(1), halfWidth, halfHeight + i);
+                ctx.fillText((i/scaleDistance).toFixed(1), widthOffset + i, heightOffset);
+                ctx.fillText((i/scaleDepth).toFixed(2), widthOffset, heightOffset - i);
             }
 
         } else {
-            ctx.fillText('DISTANCE', halfWidth + i, halfHeight);
-            ctx.fillText('DEPTH', halfWidth, halfHeight - i);
+            ctx.fillText('DISTANCE', widthOffset + i, heightOffset);
+            ctx.fillText('DEPTH', widthOffset, heightOffset - i);
             return;
         }
     }
@@ -359,13 +360,13 @@ function drawField (ctx) {
     ctx.lineWidth = 1;
     ctx.strokeStyle = 'black';
     ctx.beginPath();
-    ctx.moveTo(halfWidth, 0);
-    ctx.lineTo(halfWidth, canvasHeight);
+    ctx.moveTo(widthOffset, 0);
+    ctx.lineTo(widthOffset, canvasHeight);
     ctx.stroke();
 
     ctx.beginPath();
-    ctx.moveTo(0, halfHeight);
-    ctx.lineTo(canvasWidth, halfHeight);
+    ctx.moveTo(0, heightOffset);
+    ctx.lineTo(canvasWidth, heightOffset);
     ctx.stroke();
 }
 

@@ -129,8 +129,7 @@ function generateExtremums(numExtremums) {
         }
     });
     extrenums[depthIndex].color = 'black';
-    //extrenums.sort((a, b) => a.depth - b.depth);
-        return extrenums;
+    return extrenums;
 }
 
 let canvas = document.getElementById('canvas');
@@ -209,12 +208,13 @@ function stop() {
     });
     populationsArray = [];
 }
-const iconPopulationTemplates = ['<i class="fas fa-ruler info_item"></i>',
+const iconPopulationTemplates = [
     '<i class="fas fa-adjust info_item"></i>',
+    '<i class="fas fa-ruler info_item"></i>',
     '<div class="info_item"><i class="fas fa-ruler"></i>&ensp;<i class="fas fa-adjust"></i></div>'];
 
 function showInfo(name, globalExtremums, finish) {
-    const current = getNumberOfName(name);
+    const current = getNumberOfName(name, globalExtremums.length);
     const newElement = document.createElement('tr');
     if(finish) {
         const container = document.getElementById('info');
@@ -222,6 +222,8 @@ function showInfo(name, globalExtremums, finish) {
         return;
     }
     document.getElementById('info_main').style.display = 'block';
+
+    console.log('globalExtremums ', globalExtremums);
 
     let depth  = globalExtremums[current].depth.toFixed(2);
     if(depth == 0) {
@@ -231,12 +233,23 @@ function showInfo(name, globalExtremums, finish) {
     if(distance == 0) {
         distance = '-'
     };
+    let iconCurrent = current;
+    let wFirtstStub ='';
+    let wSecondStub ='';
+    if(iconCurrent>2) iconCurrent = 2;
+    if(iconCurrent<2) {
+        wFirtstStub = '-';
+        wSecondStub = '-';
+    } else {
+        wFirtstStub = undefined;
+        wSecondStub = undefined;
+    }
     newElement.innerHTML =
-        '<td>' + iconPopulationTemplates[current] + '</td>'
+        '<td>' + iconPopulationTemplates[iconCurrent] + '</td>'
         +'<td>' + depth +' c.u.'+'</td>'
         +'<td>' + distance +' c.u.'+ '</td>'
-        +'<td>' + wFirtst.toFixed(2) +'</td>'
-        +'<td>' + wSecond.toFixed(2) + '</td>'
+        +'<td>' + `${wFirtstStub || wFirtst.toFixed(2)}` +'</td>'
+        +'<td>' + `${wSecondStub || wSecond.toFixed(2)}` + '</td>'
     ;
 
     const container = document.getElementById('info');
@@ -256,11 +269,11 @@ function init(){;
     document.getElementById('circleDistance').style.color = colorGenesDepth;
 }
 
-function getNumberOfName(name) {
+function getNumberOfName(name, length) {
     switch (name) {
         case 'Depth': return 0;
         case 'Distance': return 1;
-        case 'Distance and Depth': return 2;
+        case 'Distance and Depth': return length - 1;
     }
     if(newRules) {
         purposes.push(purpose.generatePurpose('Depth', colorGenesDepth, purposeDepth));

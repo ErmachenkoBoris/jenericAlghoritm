@@ -140,8 +140,8 @@ body {
 .main_container__info {
     margin-left: 35px;
 }
-.info_container {
-    /*height: 250px;*/
+.choose {
+    height: 29px;
 }
 .info {
     display: flex;
@@ -156,7 +156,6 @@ body {
     width: 50px;
 }
 
-/**/
 .switch {
     position: relative;
     display: inline-block;
