@@ -13,7 +13,7 @@
   },
   "scripts": {
     "test": "command",
-    "build": "webpack"
+    "build": "webpack -p"
   },
   "repository": {
     "type": "git",
