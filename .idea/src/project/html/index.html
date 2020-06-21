@@ -6,25 +6,196 @@
         <title>
             Genetic Algorithm by Ermachenko Boris
         </title>
+        <script src="https://kit.fontawesome.com/9c7de1a324.js" crossorigin="anonymous"></script>
     </head>
     <body>
-    <script type="module" defer src="../js/jeneticEngine.js"></script>
-    <div class="main_container">
-        <canvas id="canvas" class="main_container__canvas">
-        </canvas>
-        <div class="main_container__menu">
-            <div class="menu__form">
-                <form class="form">
-                    <label for="populateNumber" class="menu__form-label">number of population : </label>
-                    <input class="menu__form-text" type="text" id="populateNumber" value="100">
-                </form>
-            </div>
+    <div class = "body_style">
+        <div class="main_container">
             <div class="menu__buttons">
-                <input id="start_button" class="button start_button" type="button" value="start">
-                <input id="pause_button" class="button pause_button" type="button" value="pause">
-                <input id="stop_button" class="button stop_button" type="button" value="stop">
+                <div class="tooltip-container">
+                    <i id="start_button" class="fas fa-play button start_button"></i>
+                    <p class="tooltip"><i class="far fa-lightbulb"></i>&nbsp;Сlick to start</p>
+                </div>
+                <div class="tooltip-container">
+                    <i id="pause_button" class="far fa-pause-circle button pause_butto"></i>
+                    <p class="tooltip"><i class="far fa-lightbulb"></i>&nbsp;Сlick to pause</p>
+                </div>
+                <div class="tooltip-container">
+                    <i id="stop_button" class="fas fa-stop button stop_button"></i>
+                    <p class="tooltip"><i class="far fa-lightbulb"></i>&nbsp;Сlick to stop</p>
+                </div>
+                <div>
+                    <div class="tooltip-container">
+                        <label class="switch">
+                            <input id="viewMode" type="checkbox" checked>
+                            <span class="slider round"></span>
+                        </label>
+                        <p class="tooltip"><i class="far fa-lightbulb"></i>&nbsp;Сlick to switch view to Map / Cartesian</p>
+                    </div>
+                </div>
+            </div>
+            <div class="main_container__canvas">
+                <div class="tooltip-container">
+                    <canvas id="canvas" class="canvas">
+                    </canvas>
+                    <p class="tooltip"><i class="far fa-lightbulb"></i>&nbsp;Map / Cartesian</p>
+                </div>
+            </div>
+            <div class="main_container__menu">
+                <div class = "population single">
+                    <div class="tooltip-container">
+                    <div class="icons">
+                        <i class="fas fa-mountain"></i>
+                    </div>
+                        <p class="tooltip"><i class="far fa-lightbulb"></i>&nbsp;Choose a number of hollows</p>
+                    </div>
+                    <div class="tooltip-container">
+                        <i class="fas fa-sort-amount-down-alt"></i>
+                        <p class="tooltip"><i class="far fa-lightbulb"></i>&nbsp;Choose a number of hollows</p>
+                    </div>
+                        <select id="extremumNumber">
+                            <option value="5">5</option>
+                            <option selected="selected" value="10">10</option>
+                            <option value="30">30</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                            <option value="200">200</option>
+                            <option value="300">300</option>
+                            <option value="500">500</option>
+                        </select>
+                    <div class="tooltip-container">
+                        <div class="icons">
+                            <i class="fas fa-redo-alt"></i>
+                            <input id="refreshExtremums" type="checkbox">
+                        </div>
+                        <p class="tooltip"><i class="far fa-lightbulb"></i>&nbsp;Click here, if you want new Map</p>
+                    </div>
+                </div>
+                <div class="population single">
+                    <div class="tooltip-container">
+                        <div class="icons">
+                            <i id='circleDistance' class="fas fa-circle"></i>
+                        </div>
+                        <p class="tooltip"><i class="far fa-lightbulb"></i>&nbsp;
+                            Color for depth-population </p>
+                    </div>
+                    <div class="tooltip-container">
+                        <i class="fas fa-users"></i>
+                        <p class="tooltip"><i class="far fa-lightbulb"></i>&nbsp;
+                            Choose number of populaion for searching by depth</p>
+                    </div>
+                    <select id="populateNumberFirst">
+                        <option value="300">300</option>
+                        <option value="350">350</option>
+                        <option value="400">400</option>
+                        <option value="400">450</option>
+                        <option value="500">500</option>
+                    </select>
+                    <div class="tooltip-container">
+                        <div class="icons">
+                            <i class="fas fa-adjust"></i>
+                        </div>
+                        <p class="tooltip"><i class="far fa-lightbulb"></i>&nbsp;
+                            depth</p>
+                    </div>
+                </div>
+                <div class="population single">
+                    <div class="tooltip-container">
+                        <div class="icons">
+                            <i id='circleDepth' class="fas fa-circle"></i>
+                        </div>
+                        <p class="tooltip"><i class="far fa-lightbulb"></i>&nbsp;
+                            Color for distance-population</p>
+                    </div>
+                    <div class="tooltip-container">
+                        <i class="fas fa-users"></i>
+                        <p class="tooltip"><i class="far fa-lightbulb"></i>&nbsp;
+                            Choose number of populaion for searching by distance</p>
+                    </div>
+                    <select id="populateNumberSecond">
+                        <option value="300">600</option>
+                        <option value="350">650</option>
+                        <option value="400">700</option>
+                        <option value="400">750</option>
+                        <option value="500">800</option>
+                    </select>
+                    <div class="tooltip-container">
+                        <div class="icons">
+                            <i class="fas fa-ruler"></i>
+                        </div>
+                        <p class="tooltip"><i class="far fa-lightbulb"></i>&nbsp;
+                            distance</p>
+                    </div>
+
+                </div>
+                <div class ="severalCases">
+                        <div class="population">
+                            <div class="tooltip-container">
+                                <div class="icons">
+                                    <i id='circleDepthAndDisctance' class="fas fa-circle"></i>
+                                </div>
+                                <p class="tooltip"><i class="far fa-lightbulb"></i>&nbsp;
+                                    Color for distance & depth - population</p>
+                            </div>
+                            <div class="tooltip-container">
+                                <i class="fas fa-users"></i>
+                                <p class="tooltip"><i class="far fa-lightbulb"></i>&nbsp;
+                                    Choose number of populaion for searching by distance & depth</p>
+                            </div>
+                            <select id="populateNumberThird">
+                                <option value="300">600</option>
+                                <option value="350">650</option>
+                                <option value="400">700</option>
+                                <option value="400">750</option>
+                                <option value="500">800</option>
+                            </select>
+                            <div class="tooltip-container">
+                                <div class="icons small">
+                                    <i class="fas fa-ruler"></i>&ensp;<i class="fas fa-adjust"></i>
+                                </div>
+                                <p class="tooltip"><i class="far fa-lightbulb"></i>&nbsp;
+                                    distance & depth</p>
+                            </div>
+                        </div>
+
+                    <div class="adjust">
+                            <div class="adjust__icons">
+                                <i class="fas fa-ruler"></i>
+                            </div>
+                            <div>
+                                <div class="tooltip-container">
+                                    <input class="adjust_input" id = 'adjust_first' type="range" min="1" max="100" step="1" value="50">
+                                <p class="tooltip"><i class="far fa-lightbulb"></i>&nbsp;
+                                    adjust the importance of distance
+                                </p>
+                                </div>
+                            </div>
+                            <div class="adjust__icons">
+                                <i class="fas fa-adjust"></i>
+                            </div>
+                            <div>
+                                <div class="tooltip-container">
+                                    <input class="adjust_input" id = 'adjust_second' type="range" min="1" max="100" step="1" value="50">
+                                    <p class="tooltip"><i class="far fa-lightbulb"></i>&nbsp;
+                                        adjust the importance of depth
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+                <div  id="info_main" style="display: none" class="main_container__info">
+                    <div class="info_icon"><i class="fas fa-info-circle"></i></div>
+                    <div class="info_container">
+                        <table cellpadding="5" cellspacing="3" >
+                            <tr><th>Mode</th><th>Depth</th><th>Distance</th><th>Weight Depth</th><th>Weight Disctance</th></tr>
+                        </table>
+                        <table id="info"cellpadding="5" cellspacing="3" class="info_container">
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+    <script type="module" defer src="../../../../dist/bundle.js"></script>
     </body>
 </html>
