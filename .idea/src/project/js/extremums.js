@@ -19,6 +19,10 @@ export function generateExtremum(canvasWidth, canvasHeight) {
     return extrenum;
 }
 
+export function lightenDarkenColorFake(col, amt){
+
+}
+
 export function lightenDarkenColor(col, amt) {
 
     var usePound = false;
